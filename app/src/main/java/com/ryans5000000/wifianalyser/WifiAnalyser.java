@@ -1,16 +1,28 @@
 package com.ryans5000000.wifianalyser;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static java.security.AccessController.getContext;
 
@@ -18,9 +30,12 @@ public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
 
     private TextView tvDebug;
     private ViewPager viewPager;
-    private boolean locationPermitted;
+    SwipePagerAdapter swipePagerAdapter;
+    private boolean locationPermissions;
     private LocationManager mLocationManager;
-    private LocationListener mLocationListener;
+    private WifiManager mWifiManager;
+
+    final int LOCATION_REQUEST = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,60 +45,55 @@ public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
 
         //Create and set view pager adapter
         viewPager = (ViewPager) findViewById(R.id.vpSwipe);
-        SwipePagerAdapter swipePagerAdapter = new SwipePagerAdapter(getSupportFragmentManager());
+        swipePagerAdapter = new SwipePagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(swipePagerAdapter);
 
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        // Initiate the location listener
-        mLocationListener = new WiFiLocationListener() ;
-        requestLocation(mLocationManager);
         // Verify that location permissions have been granted
-        if (!this.locationPermitted) { return; }
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        requestLocationPermissions();
+        if (!this.locationPermissions) { requestLocationPermissions(); }
+
+        // Initiate wifi manager
+        mWifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        mWifiManager.setWifiEnabled(true);
+
     }
 
-    public void requestLocation (LocationManager mLocationManager) {
+    public void requestLocationPermissions () {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.INTERNET
-                },10);
+                },LOCATION_REQUEST);
             }
             Toast.makeText(this,"Location Requested",Toast.LENGTH_LONG).show();
         } else {
-            this.locationPermitted = true;
-            mLocationManager.requestLocationUpdates("gps", 2000, 0, mLocationListener);
+            this.locationPermissions = true;
         }
-
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permission, int[] grantResults) {
         switch (requestCode) {
             case 10:
-                this.locationPermitted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                this.locationPermissions = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         }
     }
 
-    private class WiFiLocationListener implements LocationListener {
-
-        private android.location.Location prevlocation;
-
-        @Override
-        public void onLocationChanged(android.location.Location location) {
-            double lat = location.getLatitude();
-            double lon = location.getLongitude();
-            this.prevlocation = location;
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {}
-        @Override
-        public void onProviderEnabled(String provider) {}
-        @Override
-        public void onProviderDisabled(String provider) {}
+    public TextView getDebug() {
+        return this.tvDebug;
     }
+
+    public WifiManager getWifiManager() {
+        return this.mWifiManager;
+    }
+
+    public LocationManager getLocationManager() {
+        return this.mLocationManager;
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -96,4 +106,5 @@ public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
         }
     }
+
 }

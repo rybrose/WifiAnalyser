@@ -10,7 +10,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class SwipePagerAdapter extends FragmentPagerAdapter {
 
-    private final String[] TITLES = { "WiFi Location Mapper"};
+    static final int WIFI_LOCATION_MAPPER = 0;
+
+    private final String[] TITLES = { "WIFI_LOCATION_MAPPER" };
+    private Fragment[] fragments;
 
     public SwipePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -20,6 +23,9 @@ public class SwipePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         Fragment f;
         switch (position) {
+            case WIFI_LOCATION_MAPPER:
+                f = new WiFiLocationMapper();
+                break;
             default:
                 f = new WiFiLocationMapper();
         }
@@ -31,4 +37,7 @@ public class SwipePagerAdapter extends FragmentPagerAdapter {
         return TITLES.length;
     }
 
+    public Fragment getFragment (int position) {
+        return fragments[position];
+    }
 }
