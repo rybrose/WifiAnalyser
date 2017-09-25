@@ -16,70 +16,25 @@
         android:textSize="30sp"
         />
 
-    <RelativeLayout
-        android:id="@+id/rlBody"
+    <Button
+        android:id="@+id/btnWifiScan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:layout_below="@+id/tvWiFiLocationMapper"
-        android:layout_centerHorizontal="true"
-        >
+        android:text="Start WiFi Scan"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:layout_marginRight="5sp"
+        android:layout_alignLeft="@+id/tvWiFiLocationMapper"
+        />
 
-        <RelativeLayout
-            android:id="@+id/rlWifiScan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/btnWifiScan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Start WiFi Scan"
-                android:textAlignment="center"
-                android:textSize="14sp"
-                android:layout_marginRight="5sp"
-                />
-
-            <ListView
-                android:id="@+id/lvWifiResults"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/btnWifiScan"
-                android:layout_alignLeft="@id/btnWifiScan"
-                android:layout_alignRight="@id/btnWifiScan" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/rlWifiScan"
-            >
-
-            <Button
-                android:id="@+id/btnLocation"
-                android:layout_width="180dp"
-                android:layout_height="wrap_content"
-                android:text="Start Location"
-                android:textAlignment="center"
-                android:textSize="14sp"
-                android:layout_marginLeft="5sp"
-                />
-
-            <ListView
-                android:id="@+id/lvLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/btnLocation"
-                android:layout_alignRight="@id/btnLocation"
-                android:layout_below="@+id/btnLocation"
-                />
-
-    </RelativeLayout>
-
-
-
-    </RelativeLayout>
+    <Button
+        android:id="@+id/btnLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Location"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:layout_alignRight="@+id/tvWiFiLocationMapper"
+        />
 
 </RelativeLayout>

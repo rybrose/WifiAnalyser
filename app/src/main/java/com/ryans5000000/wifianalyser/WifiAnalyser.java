@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -33,9 +34,11 @@ public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
     SwipePagerAdapter swipePagerAdapter;
     private boolean locationPermissions;
     private LocationManager mLocationManager;
-    private WifiManager mWifiManager;
-
     final int LOCATION_REQUEST = 10;
+    private WifiManager mWifiManager;
+    private SharedPreferences settings;
+    private SharedPreferences.Editor editor;
+    public static final String PREFS_NAME = "WifiAnalyserPrefs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,11 @@ public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
         // Initiate wifi manager
         mWifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         mWifiManager.setWifiEnabled(true);
+
+        // We need an Editor object to make preference changes.
+        settings = getSharedPreferences(PREFS_NAME, 0);
+        editor = settings.edit();
+
 
     }
 
