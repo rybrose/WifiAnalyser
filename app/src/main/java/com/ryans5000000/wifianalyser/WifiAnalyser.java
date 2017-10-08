@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static java.security.AccessController.getContext;
+import android.net.ConnectivityManager;
 
 public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
 
@@ -39,6 +40,8 @@ public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
     public static final String PREFS_NAME = "WifiAnalyserPrefs";
+
+    private MobilityAnalyser mobilityAnalyser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,13 @@ public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
         // Initiate wifi manager
         mWifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         mWifiManager.setWifiEnabled(true);
+
+        ///////////////////////////////////////
+        mobilityAnalyser = new MobilityAnalyser(mWifiManager, this);
+        IntentFilter mobilityIntentFilter = new IntentFilter();
+        mobilityIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        mobilityIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        registerReceiver(mobilityAnalyser, mobilityIntentFilter);
 
         // We need an Editor object to make preference changes.
         settings = getSharedPreferences(PREFS_NAME, 0);

@@ -155,18 +155,20 @@ public class WiFiLocationMapper extends Fragment {
                 //ardWifi.notifyDataSetChanged();
 
                 // Map to the current location
-                DecimalFormat df = new DecimalFormat("#.####");
-                String coords = df.format(mLocation.getLatitude())+","+df.format(mLocation.getLongitude());
-                tvDebug.append("\n"+coords);
-                if (mappedSignals.get(coords) == null) {
-                    mappedSignals.put(coords,new ArrayList<Integer>());
+                if(mLocation != null) {
+                    DecimalFormat df = new DecimalFormat("#.####");
+                    String coords = df.format(mLocation.getLatitude()) + "," + df.format(mLocation.getLongitude());
+                    tvDebug.append("\n" + coords);
+                    if (mappedSignals.get(coords) == null) {
+                        mappedSignals.put(coords, new ArrayList<Integer>());
+                    }
+                    mappedSignals.get(coords).add(wiFlySam.level);
+                    Gson gson = new Gson();
+                    String str = gson.toJson(mappedSignals);
+                    editor.putString("MappedSignals", str);
+                    tvDebug.setText(str);
+                    editor.commit();
                 }
-                mappedSignals.get(coords).add(wiFlySam.level);
-                Gson gson = new Gson();
-                String str = gson.toJson(mappedSignals);
-                editor.putString("MappedSignals",str);
-                tvDebug.setText(str);
-                editor.commit();
             }
         }
     }
