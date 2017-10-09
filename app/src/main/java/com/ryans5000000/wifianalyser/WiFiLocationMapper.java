@@ -78,7 +78,8 @@ public class WiFiLocationMapper extends Fragment {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ((WifiAnalyser) getActivity()).requestLocationPermissions();
         }
-        mLocationManager.requestLocationUpdates("gps", 2000, 0, mLocationListener);
+        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 2000, 0, mLocationListener);
+        mLocationManager.requestLocationUpdates(mLocationManager.NETWORK_PROVIDER, 2000, 0, mLocationListener);
         alLocation = new ArrayList<>();
         ardLocation = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, alLocation);
 

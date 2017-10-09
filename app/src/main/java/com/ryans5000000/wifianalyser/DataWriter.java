@@ -18,7 +18,7 @@ public class DataWriter {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            FileWriter fileWriter = new FileWriter(file);
+            FileWriter fileWriter = new FileWriter(file, true);
             BufferedWriter out = new BufferedWriter(fileWriter);
             out.write(data);
             out.newLine();

@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 
 import java.util.ArrayList;
 
@@ -22,7 +24,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
     public ArrayList<ScanResult> networks;
     private DataWriter writer;
     private int uniwideAPs = 0;
-    public LinkLayerAnalyser(WifiManager w, LocationManager lm,DataWriter writer) {
+    public LinkLayerAnalyser(WifiManager w, LocationManager lm, DataWriter writer) {
         mWifiManager = w;
         mLocationManager = lm;
         info = w.getConnectionInfo();
@@ -38,6 +40,17 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
             location = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
         } catch(SecurityException e) {
             return;
+        }
+
+        if (location == null) {
+            try {
+                location = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+            } catch(SecurityException e) {
+                return;
+            }
+            if(location == null) {
+                return;
+            }
         }
 
         String strLoc = location.getLatitude() + "," + location.getLongitude();
@@ -101,7 +114,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
             // Count the number of unique Uniwide APs
             for (ScanResult s : alScanResults) {
                 networks.add(s);
-                if (s.SSID == "uniwide") {
+                if (s.SSID.equals("uniwide")) {
                     uniwideAPs++;
                 }
             }
