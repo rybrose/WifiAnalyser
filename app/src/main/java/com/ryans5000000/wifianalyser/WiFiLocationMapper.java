@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -44,29 +45,21 @@ import java.util.List;
 public class WiFiLocationMapper extends Fragment {
 
     private TextView tvDebug;
-
+    private MobilityAnalyser mobilityAnalyser;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private android.location.Location mLocation;
     private WifiManager mWifiManager;
-    private WifiReceiver mWifiReceiver;
+    private LinkLayerAnalyser mLinkLayerAnalyser;
 
     private Button btnWifiScan;
     private ArrayAdapter ardWifi;
-    private ArrayList<ScanResult> alScanResults;
-    private ArrayList<String> alWifiResults;
     private ListView lvWifi;
-
     private Button btnLocation;
     private ArrayAdapter ardLocation;
     private ArrayList<String> alLocation;
-    private ListView lvLocation;
+    private DataWriter writer;
 
-    private HashMap<String,ArrayList<Integer>> mappedSignals;
-
-    private SharedPreferences settings;
-    private SharedPreferences.Editor editor;
-    public static final String PREFS_NAME = "WifiAnalyserPrefs";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,21 +70,7 @@ public class WiFiLocationMapper extends Fragment {
 
         tvDebug = ((WifiAnalyser)getActivity()).getDebug();
 
-        // Initialise wifi scan and set adapter to listview
-        mWifiManager = ((WifiAnalyser)getActivity()).getWifiManager();
-        mWifiReceiver = new WifiReceiver();
-        getActivity().registerReceiver(mWifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        alWifiResults = new ArrayList<>();
-        ardWifi = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, alWifiResults);
-
-        btnWifiScan = (Button) view.findViewById(R.id.btnWifiScan);
-        btnWifiScan.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                alWifiResults.clear();
-                mWifiManager.startScan();
-            }
-        });
-
+        writer = new DataWriter();
 
         // Initialise location services and set adapter to listview
         mLocationManager = ((WifiAnalyser)getActivity()).getLocationManager();
@@ -103,6 +82,29 @@ public class WiFiLocationMapper extends Fragment {
         alLocation = new ArrayList<>();
         ardLocation = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, alLocation);
 
+
+        // Initialise wifi scan and set adapter to listview
+        mWifiManager = ((WifiAnalyser)getActivity()).getWifiManager();
+        mLinkLayerAnalyser = new LinkLayerAnalyser(mWifiManager, mLocationManager, writer);
+        getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        ardWifi = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, mLinkLayerAnalyser.networks);
+
+        ///////////////////////////////////////
+        mobilityAnalyser = new MobilityAnalyser(mWifiManager, mLocationManager, writer, this.getContext());
+        IntentFilter mobilityIntentFilter = new IntentFilter();
+        mobilityIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        mobilityIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        getActivity().registerReceiver(mobilityAnalyser, mobilityIntentFilter);
+
+        btnWifiScan = (Button) view.findViewById(R.id.btnWifiScan);
+        btnWifiScan.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mLinkLayerAnalyser.networks.clear();
+                mWifiManager.startScan();
+            }
+        });
+
+        /*
         // We need an Editor object to make preference changes.
         settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
         editor = settings.edit();
@@ -118,7 +120,9 @@ public class WiFiLocationMapper extends Fragment {
         } else {
             mappedSignals = gson.fromJson(str, type);
             tvDebug.setText(mappedSignals.toString());
-        }
+        } */
+
+
         /*
         if (mappedSignals == null) {
             mappedSignals = new HashMap<String, ArrayList<Integer>>();
@@ -131,7 +135,7 @@ public class WiFiLocationMapper extends Fragment {
         return view;
     }
 
-    private class WifiReceiver extends BroadcastReceiver {
+    /*private class WifiReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().contains("wifi.SCAN_RESULTS")) {
@@ -165,13 +169,13 @@ public class WiFiLocationMapper extends Fragment {
                     mappedSignals.get(coords).add(wiFlySam.level);
                     Gson gson = new Gson();
                     String str = gson.toJson(mappedSignals);
-                    editor.putString("MappedSignals", str);
-                    tvDebug.setText(str);
-                    editor.commit();
+                    //editor.putString("MappedSignals", str);
+                    //tvDebug.setText(str);
+                    //editor.commit();
                 }
             }
         }
-    }
+    }*/
 
     private class WiFiLocationListener implements LocationListener {
 
@@ -185,7 +189,7 @@ public class WiFiLocationMapper extends Fragment {
             //ardLocation.notifyDataSetChanged();
             this.prevlocation = location;
             mLocation = location;
-            alWifiResults.clear();
+            mLinkLayerAnalyser.networks.clear();
             mWifiManager.startScan();
         }
 
@@ -201,14 +205,14 @@ public class WiFiLocationMapper extends Fragment {
     public void onPause() {
         // Always call the superclass method first
         super.onPause();
-        getActivity().unregisterReceiver(mWifiReceiver);
+        getActivity().unregisterReceiver(mLinkLayerAnalyser);
     }
 
     @Override
     public void onResume() {
         // Always call the superclass method first
         super.onResume();
-        getActivity().registerReceiver(mWifiReceiver,new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
 }

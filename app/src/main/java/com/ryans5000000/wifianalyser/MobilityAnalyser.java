@@ -6,9 +6,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.ContactsContract;
+import android.provider.Settings;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -19,25 +29,35 @@ import java.net.URL;
  */
 
 public class MobilityAnalyser extends BroadcastReceiver {
-    WifiManager mWifiManager;
-    Long conn_gained = System.currentTimeMillis();
-    Long conn_lost = Long.valueOf(0);
-    Long dhcp_gained = System.currentTimeMillis();
-    Long dhcp_lost = Long.valueOf(0);
-    boolean has_network = false;
-    boolean has_dhcp = false;
-    String prev_bssid;
+    private WifiManager mWifiManager;
+    private Long conn_gained = System.currentTimeMillis();
+    private Long conn_lost = Long.valueOf(0);
+    private Long dhcp_gained = System.currentTimeMillis();
+    private Long dhcp_lost = Long.valueOf(0);
+    private boolean has_network = false;
+    private boolean has_dhcp = false;
+    private String prev_bssid;
+    private LocationManager mLocationManager;
+    String dhcp_lost_loc = "";
+    String dhcp_regained_loc = "";
+    String conn_lost_loc = "";
+    String conn_regained_loc = "";
+    final private DataWriter writer;
 
-
-    public MobilityAnalyser(WifiManager w, Context context) {
+    public MobilityAnalyser(WifiManager w, LocationManager lm, final DataWriter wr, Context context) {
         mWifiManager = w;
+        mLocationManager = lm;
+        this.writer = wr;
         final Context mContext = context;
-        prev_bssid = String.valueOf(w.getConnectionInfo().getBSSID());
+        prev_bssid = w.getConnectionInfo().getBSSID();
         Thread pingWorker = new Thread(new Runnable() {
             @Override
             public void run() {
                 Long tcp_gained = System.currentTimeMillis();
                 Long tcp_lost = Long.valueOf(0);
+                String tcp_lost_loc = "";
+                String tcp_regained_loc = "";
+
 
                 while (true) {
                     if (has_network) {
@@ -52,20 +72,47 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                     tcp_gained = System.currentTimeMillis();
                                     Long time_taken_to_regain = tcp_gained - tcp_lost;
                                     tcp_lost = Long.valueOf(0);
-                                    showDebugAlert("L4: TCP lost for " + time_taken_to_regain + " ms.", mContext);
+                                    try {
+                                        Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                        tcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                                    } catch (SecurityException e) {
+                                        tcp_regained_loc = "";
+                                    }
+                                    String data = System.currentTimeMillis()  + "," + tcp_lost_loc  + "," + tcp_regained_loc   + ",L4," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                                    writer.write(data, "blackspots.txt");
+                                    prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
+                                    //showDebugAlert("L4: TCP lost for " + time_taken_to_regain + " ms.", mContext);
                                 }
                             } else {
                                 if (tcp_lost == 0) {
                                     tcp_lost = System.currentTimeMillis();
+                                    try {
+                                        Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                        tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                                    } catch (SecurityException e) {
+                                        tcp_lost_loc = "";
+                                    }
                                 }
                             }
                         } catch (MalformedURLException e1) {
                             if (tcp_lost == 0) {
                                 tcp_lost = System.currentTimeMillis();
+                                try {
+                                    Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                    tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                                } catch (SecurityException e) {
+                                    tcp_lost_loc = "";
+                                }
                             }
                         } catch (IOException e) {
                             if (tcp_lost == 0) {
                                 tcp_lost = System.currentTimeMillis();
+                                try {
+                                    Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                    tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                                } catch (SecurityException ee) {
+                                    tcp_lost_loc = "";
+                                }
                             }
                         }
                         try {
@@ -94,11 +141,25 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     conn_gained = System.currentTimeMillis();
                     Long time_taken_to_regain = conn_gained - conn_lost;
                     conn_lost = Long.valueOf(0);
-                    showDebugAlert("L2: Reassociated in " + time_taken_to_regain + " ms.", context);
+                    try {
+                        Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                        conn_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                    } catch (SecurityException e) {
+                        conn_regained_loc = "";
+                    }
+                    String data = System.currentTimeMillis()  + "," + conn_lost_loc  + "," + conn_regained_loc   + ",L2," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                    prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
+                    //showDebugAlert("L2: Reassociated in " + time_taken_to_regain + " ms.", context);
                 }
             } else {
                 conn_lost = System.currentTimeMillis();
                 has_network = false;
+                try {
+                    Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                    conn_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                } catch (SecurityException e) {
+                    conn_lost_loc = "";
+                }
             }
         } else if (intent.getAction() == WifiManager.NETWORK_STATE_CHANGED_ACTION) {
             if (netInfo != null && mWifiManager.getDhcpInfo() != null && mWifiManager.getDhcpInfo().ipAddress != 0) {
@@ -107,11 +168,27 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     dhcp_gained = System.currentTimeMillis();
                     Long time_taken_to_regain = dhcp_gained - dhcp_lost;
                     dhcp_lost = Long.valueOf(0);
-                    showDebugAlert("L3: DHCP regained in " + time_taken_to_regain + " ms.", context);
+                    try {
+                        Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                        dhcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                    } catch (SecurityException e) {
+                        dhcp_regained_loc = "";
+                    }
+                    //Blackspot blackspot = new Blackspot(System.currentTimeMillis(), dhcp_lost_loc, dhcp_regained_loc, "L3", time_taken_to_regain, prev_bssid, mWifiManager.getConnectionInfo().getBSSID());
+                    String data = System.currentTimeMillis()  + "," + dhcp_lost_loc  + "," + dhcp_regained_loc   + ",L3," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                    writer.write(data, "blackspots.txt");
+                    prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
+                    //showDebugAlert("L3: DHCP regained in " + time_taken_to_regain + " ms.", context);
                 }
             } else {
                 dhcp_lost = System.currentTimeMillis();
                 has_dhcp = false;
+                try {
+                    Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                    dhcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                } catch (SecurityException e) {
+                    dhcp_lost_loc = "";
+                }
             }
         }
     }
