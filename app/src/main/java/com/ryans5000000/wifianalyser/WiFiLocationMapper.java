@@ -69,12 +69,23 @@ public class WiFiLocationMapper extends Fragment {
                 container, false);
 
         tvDebug = ((WifiAnalyser)getActivity()).getDebug();
+        btnWifiScan = (Button) view.findViewById(R.id.btnWifiScan);
+        btnWifiScan.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mLinkLayerAnalyser.networks.clear();
+                mWifiManager.startScan();
+                Button forceBtn = (Button) v;
+                forceBtn.setEnabled(false);
+                forceBtn.setText("Scanning...");
+                ((WifiAnalyser)getActivity()).setDebugText("Warning: Scanning started manually.");
+            }
+        });
 
-        writer = new DataWriter();
+        writer = new DataWriter(tvDebug);
 
         // Initialise location services and set adapter to listview
         mLocationManager = ((WifiAnalyser)getActivity()).getLocationManager();
-        mLocationListener = new WiFiLocationListener();
+        mLocationListener = new WiFiLocationListener(btnWifiScan);
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ((WifiAnalyser) getActivity()).requestLocationPermissions();
         }
@@ -97,13 +108,7 @@ public class WiFiLocationMapper extends Fragment {
         mobilityIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         getActivity().registerReceiver(mobilityAnalyser, mobilityIntentFilter);
 
-        btnWifiScan = (Button) view.findViewById(R.id.btnWifiScan);
-        btnWifiScan.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mLinkLayerAnalyser.networks.clear();
-                mWifiManager.startScan();
-            }
-        });
+
 
         /*
         // We need an Editor object to make preference changes.
@@ -181,9 +186,17 @@ public class WiFiLocationMapper extends Fragment {
     private class WiFiLocationListener implements LocationListener {
 
         private android.location.Location prevlocation;
+        Button forceBtn;
+        public WiFiLocationListener(Button btn) {
+            forceBtn = btn;
+        }
 
         @Override
         public void onLocationChanged(android.location.Location location) {
+            this.forceBtn.setEnabled(false);
+            this.forceBtn.setText("Scanning...");
+            ((WifiAnalyser)getActivity()).setDebugText("Scanning started automatically.");
+
             double lat = location.getLatitude();
             double lon = location.getLongitude();
             alLocation.add(0,Double.toString(lat)+"\n"+Double.toString(lon));

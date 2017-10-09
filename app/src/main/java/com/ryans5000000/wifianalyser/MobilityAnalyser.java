@@ -80,6 +80,7 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                     }
                                     String data = System.currentTimeMillis()  + "," + tcp_lost_loc  + "," + tcp_regained_loc   + ",L4," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
                                     writer.write(data, "blackspots.txt");
+
                                     prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
                                     //showDebugAlert("L4: TCP lost for " + time_taken_to_regain + " ms.", mContext);
                                 }

@@ -97,6 +97,10 @@ public class WifiAnalyser extends android.support.v4.app.FragmentActivity {
         return this.tvDebug;
     }
 
+    public void setDebugText(String s) {
+        this.tvDebug.setText(s);
+    }
+
     public WifiManager getWifiManager() {
         return this.mWifiManager;
     }

@@ -20,21 +20,10 @@
         android:id="@+id/btnWifiScan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start WiFi Scan"
-        android:textAlignment="center"
-        android:textSize="14sp"
-        android:layout_marginRight="5sp"
         android:layout_alignLeft="@+id/tvWiFiLocationMapper"
-        />
-
-    <Button
-        android:id="@+id/btnLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Location"
+        android:layout_marginRight="5sp"
+        android:text="Force Start"
         android:textAlignment="center"
-        android:textSize="14sp"
-        android:layout_alignRight="@+id/tvWiFiLocationMapper"
-        />
+        android:textSize="14sp" />
 
 </RelativeLayout>
