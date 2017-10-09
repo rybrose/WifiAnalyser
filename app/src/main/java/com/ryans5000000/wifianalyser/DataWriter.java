@@ -41,4 +41,8 @@ public class DataWriter {
             return;
         }
     }
+
+    synchronized public void logAppend(String data) {
+        log.setText(data + "\n" + log.getText());
+    }
 }

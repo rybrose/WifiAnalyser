@@ -197,15 +197,18 @@ public class WiFiLocationMapper extends Fragment {
             this.forceBtn.setText("Scanning...");
             ((WifiAnalyser)getActivity()).setDebugText("Scanning started automatically.");
 
-            double lat = location.getLatitude();
-            double lon = location.getLongitude();
-            alLocation.add(0,Double.toString(lat)+"\n"+Double.toString(lon));
-            //ardLocation.notifyDataSetChanged();
-            this.prevlocation = location;
-            mLocation = location;
-            mLinkLayerAnalyser.networks.clear();
-            getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-            mWifiManager.startScan();
+            if (prevlocation == null || location.getLatitude() != prevlocation.getLatitude() || location.getLongitude() != prevlocation.getLongitude()) {
+                double lat = location.getLatitude();
+                double lon = location.getLongitude();
+                alLocation.add(0,Double.toString(lat)+"\n"+Double.toString(lon));
+                //ardLocation.notifyDataSetChanged();
+                this.prevlocation = location;
+                mLocation = location;
+                mLinkLayerAnalyser.networks.clear();
+                getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                mWifiManager.startScan();
+            }
+
         }
 
         @Override

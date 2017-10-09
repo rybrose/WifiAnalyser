@@ -120,6 +120,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
             }
             saveData();
             context.unregisterReceiver(this);
+            writer.logAppend("Note: Scanning pauses when location does not change.\n");
         }
     }
 }
