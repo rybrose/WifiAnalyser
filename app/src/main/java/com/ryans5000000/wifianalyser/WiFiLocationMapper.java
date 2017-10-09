@@ -204,6 +204,7 @@ public class WiFiLocationMapper extends Fragment {
             this.prevlocation = location;
             mLocation = location;
             mLinkLayerAnalyser.networks.clear();
+            getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
             mWifiManager.startScan();
         }
 

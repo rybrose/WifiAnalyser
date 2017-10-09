@@ -74,6 +74,16 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                     tcp_lost = Long.valueOf(0);
                                     try {
                                         Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                        if (lkl == null) {
+                                            try {
+                                                lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                            } catch(SecurityException e) {
+                                                return;
+                                            }
+                                            if(lkl == null) {
+                                                return;
+                                            }
+                                        }
                                         tcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
                                     } catch (SecurityException e) {
                                         tcp_regained_loc = "";
@@ -89,6 +99,16 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                     tcp_lost = System.currentTimeMillis();
                                     try {
                                         Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                        if (lkl == null) {
+                                            try {
+                                                lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                            } catch(SecurityException e) {
+                                                return;
+                                            }
+                                            if(lkl == null) {
+                                                return;
+                                            }
+                                        }
                                         tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
                                     } catch (SecurityException e) {
                                         tcp_lost_loc = "";
@@ -100,6 +120,16 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                 tcp_lost = System.currentTimeMillis();
                                 try {
                                     Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                    if (lkl == null) {
+                                        try {
+                                            lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                        } catch(SecurityException e) {
+                                            return;
+                                        }
+                                        if(lkl == null) {
+                                            return;
+                                        }
+                                    }
                                     tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
                                 } catch (SecurityException e) {
                                     tcp_lost_loc = "";
@@ -110,6 +140,16 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                 tcp_lost = System.currentTimeMillis();
                                 try {
                                     Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                    if (lkl == null) {
+                                        try {
+                                            lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                        } catch(SecurityException ee) {
+                                            return;
+                                        }
+                                        if(lkl == null) {
+                                            return;
+                                        }
+                                    }
                                     tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
                                 } catch (SecurityException ee) {
                                     tcp_lost_loc = "";
@@ -144,6 +184,16 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     conn_lost = Long.valueOf(0);
                     try {
                         Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                        if (lkl == null) {
+                            try {
+                                lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                            } catch(SecurityException e) {
+                                return;
+                            }
+                            if(lkl == null) {
+                                return;
+                            }
+                        }
                         conn_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
                     } catch (SecurityException e) {
                         conn_regained_loc = "";
@@ -157,6 +207,16 @@ public class MobilityAnalyser extends BroadcastReceiver {
                 has_network = false;
                 try {
                     Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                    if (lkl == null) {
+                        try {
+                            lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                        } catch(SecurityException e) {
+                            return;
+                        }
+                        if(lkl == null) {
+                            return;
+                        }
+                    }
                     conn_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
                 } catch (SecurityException e) {
                     conn_lost_loc = "";
@@ -171,6 +231,16 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     dhcp_lost = Long.valueOf(0);
                     try {
                         Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                        if (lkl == null) {
+                            try {
+                                lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                            } catch(SecurityException e) {
+                                return;
+                            }
+                            if(lkl == null) {
+                                return;
+                            }
+                        }
                         dhcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
                     } catch (SecurityException e) {
                         dhcp_regained_loc = "";
@@ -186,6 +256,16 @@ public class MobilityAnalyser extends BroadcastReceiver {
                 has_dhcp = false;
                 try {
                     Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                    if (lkl == null) {
+                        try {
+                            lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                        } catch(SecurityException e) {
+                            return;
+                        }
+                        if(lkl == null) {
+                            return;
+                        }
+                    }
                     dhcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
                 } catch (SecurityException e) {
                     dhcp_lost_loc = "";

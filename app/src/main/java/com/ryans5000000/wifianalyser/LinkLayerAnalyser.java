@@ -119,6 +119,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
                 }
             }
             saveData();
+            context.unregisterReceiver(this);
         }
     }
 }
