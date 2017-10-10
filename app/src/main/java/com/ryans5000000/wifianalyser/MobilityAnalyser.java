@@ -72,8 +72,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                     tcp_gained = System.currentTimeMillis();
                                     Long time_taken_to_regain = tcp_gained - tcp_lost;
                                     tcp_lost = Long.valueOf(0);
+                                    Location lkl = null;
                                     try {
-                                        Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                        lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
                                         if (lkl == null) {
                                             try {
                                                 lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
@@ -84,12 +85,12 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                                 return;
                                             }
                                         }
-                                        tcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                                        tcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                                     } catch (SecurityException e) {
-                                        tcp_regained_loc = "";
+                                        tcp_regained_loc = "?,?,?";
                                     }
-                                    String data = System.currentTimeMillis()  + "," + tcp_lost_loc  + "," + tcp_regained_loc   + ",L4," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
-                                    writer.write(data, "blackspots.txt");
+                                    String data = System.currentTimeMillis()  + "," + tcp_lost_loc  + "," + tcp_regained_loc + ",L4," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                                    writer.write(data, "blackspots.csv");
 
                                     prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
                                     //showDebugAlert("L4: TCP lost for " + time_taken_to_regain + " ms.", mContext);
@@ -109,9 +110,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                                 return;
                                             }
                                         }
-                                        tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                                        tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                                     } catch (SecurityException e) {
-                                        tcp_lost_loc = "";
+                                        tcp_lost_loc = "?,?,?";
                                     }
                                 }
                             }
@@ -130,9 +131,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                             return;
                                         }
                                     }
-                                    tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                                    tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                                 } catch (SecurityException e) {
-                                    tcp_lost_loc = "";
+                                    tcp_lost_loc = "?,?,?";
                                 }
                             }
                         } catch (IOException e) {
@@ -150,9 +151,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                             return;
                                         }
                                     }
-                                    tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                                    tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                                 } catch (SecurityException ee) {
-                                    tcp_lost_loc = "";
+                                    tcp_lost_loc = "?,?,?";
                                 }
                             }
                         }
@@ -182,8 +183,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     conn_gained = System.currentTimeMillis();
                     Long time_taken_to_regain = conn_gained - conn_lost;
                     conn_lost = Long.valueOf(0);
+                    Location lkl = null;
                     try {
-                        Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                        lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
                         if (lkl == null) {
                             try {
                                 lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
@@ -194,11 +196,11 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                 return;
                             }
                         }
-                        conn_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                        conn_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                     } catch (SecurityException e) {
-                        conn_regained_loc = "";
+                        conn_regained_loc = "?,?,?";
                     }
-                    String data = System.currentTimeMillis()  + "," + conn_lost_loc  + "," + conn_regained_loc   + ",L2," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                    String data = System.currentTimeMillis()  + "," + conn_lost_loc  + "," + conn_regained_loc + ",L2," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
                     prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
                     //showDebugAlert("L2: Reassociated in " + time_taken_to_regain + " ms.", context);
                 }
@@ -217,9 +219,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                             return;
                         }
                     }
-                    conn_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                    conn_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                 } catch (SecurityException e) {
-                    conn_lost_loc = "";
+                    conn_lost_loc = "?,?,?";
                 }
             }
         } else if (intent.getAction() == WifiManager.NETWORK_STATE_CHANGED_ACTION) {
@@ -229,8 +231,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     dhcp_gained = System.currentTimeMillis();
                     Long time_taken_to_regain = dhcp_gained - dhcp_lost;
                     dhcp_lost = Long.valueOf(0);
+                    Location lkl = null;
                     try {
-                        Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                        lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
                         if (lkl == null) {
                             try {
                                 lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
@@ -241,21 +244,22 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                 return;
                             }
                         }
-                        dhcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                        dhcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                     } catch (SecurityException e) {
-                        dhcp_regained_loc = "";
+                        dhcp_regained_loc = "?,?,?";
                     }
                     //Blackspot blackspot = new Blackspot(System.currentTimeMillis(), dhcp_lost_loc, dhcp_regained_loc, "L3", time_taken_to_regain, prev_bssid, mWifiManager.getConnectionInfo().getBSSID());
-                    String data = System.currentTimeMillis()  + "," + dhcp_lost_loc  + "," + dhcp_regained_loc   + ",L3," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
-                    writer.write(data, "blackspots.txt");
+                    String data = System.currentTimeMillis()  + "," + dhcp_lost_loc  + "," + dhcp_regained_loc + ",L3," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                    writer.write(data, "blackspots.csv");
                     prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
                     //showDebugAlert("L3: DHCP regained in " + time_taken_to_regain + " ms.", context);
                 }
             } else {
                 dhcp_lost = System.currentTimeMillis();
                 has_dhcp = false;
+                Location lkl = null;
                 try {
-                    Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                    lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
                     if (lkl == null) {
                         try {
                             lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
@@ -266,9 +270,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                             return;
                         }
                     }
-                    dhcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude());
+                    dhcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                 } catch (SecurityException e) {
-                    dhcp_lost_loc = "";
+                    dhcp_lost_loc = "?,?,?";
                 }
             }
         }

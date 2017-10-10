@@ -53,9 +53,9 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
             }
         }
 
-        String strLoc = location.getLatitude() + "," + location.getLongitude();
+        String strLoc = location.getLatitude() + "," + location.getLongitude() + "," + location.getAccuracy();
         String data = timestamp + "," + strLoc + "," + uniwideAPs + "," + getStrength()  + "," + getProtocol()  + "," + getSpeed() + "," + getFrequency() + "," + getBSSID();
-        writer.write(data, "coverage.txt");
+        writer.write(data, "coverage.csv");
         //UniwideLocation data = new UniwideLocation(timestamp, location, uniwideAPs, getStrength(), getProtocol(), getSpeed(), getFrequency(), getBSSID());
     }
 
