@@ -195,11 +195,7 @@ public class WiFiLocationMapper extends Fragment {
         public void onLocationChanged(android.location.Location location) {
             this.forceBtn.setEnabled(false);
             this.forceBtn.setText("Scanning...");
-            try {
-                ((WifiAnalyser) getActivity()).setDebugText("Scanning started automatically.");
-            } catch (NullPointerException e) {
 
-            }
 
             if (location.getAccuracy() > 20) {
                 return;

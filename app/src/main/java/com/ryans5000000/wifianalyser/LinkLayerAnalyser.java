@@ -38,10 +38,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
 
     public void saveData() {
         info = mWifiManager.getConnectionInfo();
-        if (!info.getSSID().equals("uniwide")) {
-            writer.logAppend("Warning!: You are not connected to Uniwide, data will not record until you reconnect.\n");
-            return;
-        }
+
         long timestamp = System.currentTimeMillis();
         Location location;
         try {
