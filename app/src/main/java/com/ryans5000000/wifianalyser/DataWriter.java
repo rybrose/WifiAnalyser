@@ -34,6 +34,10 @@ public class DataWriter {
                 log.setText("Link Layer: Data recorded.\n" + data);
             }
             File file = new File(Environment.getExternalStorageDirectory().getPath()+"/Documents/"+filename);
+            String s = Environment.getExternalStorageDirectory().getPath()+"/"+filename;
+            log.setText(s);
+            wait(2000);
+            File file = new File(Environment.getExternalStorageDirectory().getPath()+"/"+filename);
             FileWriter fileWriter;
             BufferedWriter out;
             if (!file.exists()) {
