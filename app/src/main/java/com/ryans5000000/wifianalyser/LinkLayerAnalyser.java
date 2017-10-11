@@ -12,6 +12,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by ryanc on 6/10/2017.
@@ -24,16 +25,23 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
     public ArrayList<ScanResult> networks;
     private DataWriter writer;
     private int uniwideAPs = 0;
+    private HashMap<String, Boolean> visited;
+
     public LinkLayerAnalyser(WifiManager w, LocationManager lm, DataWriter writer) {
+        this.writer = writer;
+        this.visited = writer.readLocations("coverage.csv");
         mWifiManager = w;
         mLocationManager = lm;
         info = w.getConnectionInfo();
         networks = new ArrayList<>();
-        this.writer = writer;
     }
 
     public void saveData() {
         info = mWifiManager.getConnectionInfo();
+        if (!info.getSSID().equals("uniwide")) {
+            writer.logAppend("Warning!: You are not connected to Uniwide, data will not record until you reconnect.\n");
+            return;
+        }
         long timestamp = System.currentTimeMillis();
         Location location;
         try {
@@ -53,10 +61,16 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
             }
         }
 
+        if (visited.containsKey(location.getLatitude() + "," + location.getLongitude())) {
+            writer.logAppend("Note: Location already recorded, skipping.\n");
+            return;
+        } else {
+            visited.put(location.getLatitude() + "," + location.getLongitude(), true);
+        }
+
         String strLoc = location.getLatitude() + "," + location.getLongitude() + "," + location.getAccuracy();
         String data = timestamp + "," + strLoc + "," + uniwideAPs + "," + getStrength()  + "," + getProtocol()  + "," + getSpeed() + "," + getFrequency() + "," + getBSSID();
         writer.write(data, "coverage.csv");
-        //UniwideLocation data = new UniwideLocation(timestamp, location, uniwideAPs, getStrength(), getProtocol(), getSpeed(), getFrequency(), getBSSID());
     }
 
     public String getBSSID() {
@@ -120,7 +134,6 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
             }
             saveData();
             context.unregisterReceiver(this);
-            writer.logAppend("Note: Scanning pauses when location does not change.\n");
         }
     }
 }

@@ -248,7 +248,6 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     } catch (SecurityException e) {
                         dhcp_regained_loc = "?,?,?";
                     }
-                    //Blackspot blackspot = new Blackspot(System.currentTimeMillis(), dhcp_lost_loc, dhcp_regained_loc, "L3", time_taken_to_regain, prev_bssid, mWifiManager.getConnectionInfo().getBSSID());
                     String data = System.currentTimeMillis()  + "," + dhcp_lost_loc  + "," + dhcp_regained_loc + ",L3," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
                     writer.write(data, "blackspots.csv");
                     prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
