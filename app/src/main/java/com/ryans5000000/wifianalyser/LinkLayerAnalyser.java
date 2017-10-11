@@ -11,6 +11,10 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -66,7 +70,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
         }
 
         String strLoc = location.getLatitude() + "," + location.getLongitude() + "," + location.getAccuracy();
-        String data = timestamp + "," + strLoc + "," + uniwideAPs + "," + getStrength()  + "," + getProtocol()  + "," + getSpeed() + "," + getFrequency() + "," + getBSSID();
+        String data = timestamp + "," + strLoc + "," + uniwideAPs + "," + getStrength()  + "," + getProtocol()  + "," + getSpeed() + "," + getFrequency() + "," + getBSSID() + "," + getIpAddress();
         writer.write(data, "coverage.csv");
     }
 
@@ -77,6 +81,26 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
     // Returns connection RSSI in dBm
     public int getStrength() {
         return info.getRssi();
+    }
+
+    // Return IP address
+    public String getIpAddress() {
+        int ipAddress = info.getIpAddress();
+        // Convert little-endian to big-endianif needed
+        if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+            ipAddress = Integer.reverseBytes(ipAddress);
+        }
+
+        byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+
+        String ipAddressString;
+        try {
+            ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+        } catch (UnknownHostException ex) {
+            ipAddressString = "";
+        }
+
+        return ipAddressString;
     }
 
     // Returns a, b, g, n, ac

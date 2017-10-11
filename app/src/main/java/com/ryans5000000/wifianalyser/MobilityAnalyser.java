@@ -20,9 +20,13 @@ import android.provider.Settings;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 
 /**
  * Created by ryanc on 6/10/2017.
@@ -37,6 +41,7 @@ public class MobilityAnalyser extends BroadcastReceiver {
     private boolean has_network = false;
     private boolean has_dhcp = false;
     private String prev_bssid;
+    private String prev_ip;
     private LocationManager mLocationManager;
     String dhcp_lost_loc = "";
     String dhcp_regained_loc = "";
@@ -51,6 +56,7 @@ public class MobilityAnalyser extends BroadcastReceiver {
         this.writer = wr;
         final Context mContext = context;
         prev_bssid = w.getConnectionInfo().getBSSID();
+        prev_ip = getIpAddress(w.getConnectionInfo().getIpAddress());
         pingWorker = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -90,10 +96,11 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                     } catch (SecurityException e) {
                                         tcp_regained_loc = "?,?,?";
                                     }
-                                    String data = System.currentTimeMillis()  + "," + tcp_lost_loc  + "," + tcp_regained_loc + ",L4," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                                    String data = System.currentTimeMillis()  + "," + tcp_lost_loc  + "," + tcp_regained_loc + ",L4," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID() + "," + prev_ip + "," + getIpAddress(mWifiManager.getConnectionInfo().getIpAddress());
                                     writer.write(data, "blackspots.csv");
 
                                     prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
+                                    prev_ip = getIpAddress(mWifiManager.getConnectionInfo().getIpAddress());
                                     //showDebugAlert("L4: TCP lost for " + time_taken_to_regain + " ms.", mContext);
                                 }
                             } else {
@@ -201,8 +208,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     } catch (SecurityException e) {
                         conn_regained_loc = "?,?,?";
                     }
-                    String data = System.currentTimeMillis()  + "," + conn_lost_loc  + "," + conn_regained_loc + ",L2," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                    String data = System.currentTimeMillis()  + "," + conn_lost_loc  + "," + conn_regained_loc + ",L2," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID() + "," + prev_ip + "," + getIpAddress(mWifiManager.getConnectionInfo().getIpAddress());
                     prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
+                    prev_ip = getIpAddress(mWifiManager.getConnectionInfo().getIpAddress());
                     //showDebugAlert("L2: Reassociated in " + time_taken_to_regain + " ms.", context);
                 }
             } else {
@@ -249,9 +257,10 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     } catch (SecurityException e) {
                         dhcp_regained_loc = "?,?,?";
                     }
-                    String data = System.currentTimeMillis()  + "," + dhcp_lost_loc  + "," + dhcp_regained_loc + ",L3," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID();
+                    String data = System.currentTimeMillis()  + "," + dhcp_lost_loc  + "," + dhcp_regained_loc + ",L3," + time_taken_to_regain   + "," + prev_bssid  + "," + mWifiManager.getConnectionInfo().getBSSID() + "," + prev_ip + "," + getIpAddress(mWifiManager.getConnectionInfo().getIpAddress());
                     writer.write(data, "blackspots.csv");
                     prev_bssid = mWifiManager.getConnectionInfo().getBSSID();
+                    prev_ip = getIpAddress(mWifiManager.getConnectionInfo().getIpAddress());
                     //showDebugAlert("L3: DHCP regained in " + time_taken_to_regain + " ms.", context);
                 }
             } else {
@@ -300,5 +309,24 @@ public class MobilityAnalyser extends BroadcastReceiver {
 
     public void stopThread() {
         this.pingWorker.interrupt();
+    }
+
+    // Return IP address
+    private String getIpAddress(int ipAddress) {
+        // Convert little-endian to big-endianif needed
+        if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+            ipAddress = Integer.reverseBytes(ipAddress);
+        }
+
+        byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+
+        String ipAddressString;
+        try {
+            ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+        } catch (UnknownHostException ex) {
+            ipAddressString = "";
+        }
+
+        return ipAddressString;
     }
 }
