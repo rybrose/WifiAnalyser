@@ -79,18 +79,35 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                     tcp_gained = System.currentTimeMillis();
                                     Long time_taken_to_regain = tcp_gained - tcp_lost;
                                     tcp_lost = Long.valueOf(0);
-                                    Location lkl = null;
                                     try {
-                                        lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
-                                        if (lkl == null) {
-                                            try {
-                                                lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-                                            } catch(SecurityException e) {
-                                                return;
+                                        Location lkl;
+                                        Location netLocation;
+                                        Location gpsLocation;
+
+                                        try {
+                                            gpsLocation = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                        } catch(SecurityException e) {
+                                            return;
+                                        }
+
+                                        try {
+                                            netLocation = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                        } catch(SecurityException e) {
+                                            return;
+                                        }
+
+                                        if (gpsLocation != null && netLocation != null) {
+                                            if (isBetterLocation(gpsLocation, netLocation)) {
+                                                lkl = gpsLocation;
+                                            } else {
+                                                lkl = netLocation;
                                             }
-                                            if(lkl == null) {
-                                                return;
-                                            }
+                                        } else if (gpsLocation == null && netLocation != null) {
+                                            lkl = netLocation;
+                                        } else if (netLocation == null && gpsLocation != null) {
+                                            lkl = gpsLocation;
+                                        } else {
+                                            return;
                                         }
                                         tcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                                     } catch (SecurityException e) {
@@ -107,16 +124,34 @@ public class MobilityAnalyser extends BroadcastReceiver {
                                 if (tcp_lost == 0) {
                                     tcp_lost = System.currentTimeMillis();
                                     try {
-                                        Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
-                                        if (lkl == null) {
-                                            try {
-                                                lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-                                            } catch(SecurityException e) {
-                                                return;
+                                        Location lkl;
+                                        Location netLocation;
+                                        Location gpsLocation;
+
+                                        try {
+                                            gpsLocation = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                        } catch(SecurityException e) {
+                                            return;
+                                        }
+
+                                        try {
+                                            netLocation = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                        } catch(SecurityException e) {
+                                            return;
+                                        }
+
+                                        if (gpsLocation != null && netLocation != null) {
+                                            if (isBetterLocation(gpsLocation, netLocation)) {
+                                                lkl = gpsLocation;
+                                            } else {
+                                                lkl = netLocation;
                                             }
-                                            if(lkl == null) {
-                                                return;
-                                            }
+                                        } else if (gpsLocation == null && netLocation != null) {
+                                            lkl = netLocation;
+                                        } else if (netLocation == null && gpsLocation != null) {
+                                            lkl = gpsLocation;
+                                        } else {
+                                            return;
                                         }
                                         tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                                     } catch (SecurityException e) {
@@ -128,16 +163,34 @@ public class MobilityAnalyser extends BroadcastReceiver {
                             if (tcp_lost == 0) {
                                 tcp_lost = System.currentTimeMillis();
                                 try {
-                                    Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
-                                    if (lkl == null) {
-                                        try {
-                                            lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-                                        } catch(SecurityException e) {
-                                            return;
+                                    Location lkl;
+                                    Location netLocation;
+                                    Location gpsLocation;
+
+                                    try {
+                                        gpsLocation = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                    } catch(SecurityException e) {
+                                        return;
+                                    }
+
+                                    try {
+                                        netLocation = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                    } catch(SecurityException e) {
+                                        return;
+                                    }
+
+                                    if (gpsLocation != null && netLocation != null) {
+                                        if (isBetterLocation(gpsLocation, netLocation)) {
+                                            lkl = gpsLocation;
+                                        } else {
+                                            lkl = netLocation;
                                         }
-                                        if(lkl == null) {
-                                            return;
-                                        }
+                                    } else if (gpsLocation == null && netLocation != null) {
+                                        lkl = netLocation;
+                                    } else if (netLocation == null && gpsLocation != null) {
+                                        lkl = gpsLocation;
+                                    } else {
+                                        return;
                                     }
                                     tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                                 } catch (SecurityException e) {
@@ -148,16 +201,34 @@ public class MobilityAnalyser extends BroadcastReceiver {
                             if (tcp_lost == 0) {
                                 tcp_lost = System.currentTimeMillis();
                                 try {
-                                    Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
-                                    if (lkl == null) {
-                                        try {
-                                            lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-                                        } catch(SecurityException ee) {
-                                            return;
+                                    Location lkl;
+                                    Location netLocation;
+                                    Location gpsLocation;
+
+                                    try {
+                                        gpsLocation = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                                    } catch(SecurityException ee) {
+                                        return;
+                                    }
+
+                                    try {
+                                        netLocation = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                    } catch(SecurityException ee) {
+                                        return;
+                                    }
+
+                                    if (gpsLocation != null && netLocation != null) {
+                                        if (isBetterLocation(gpsLocation, netLocation)) {
+                                            lkl = gpsLocation;
+                                        } else {
+                                            lkl = netLocation;
                                         }
-                                        if(lkl == null) {
-                                            return;
-                                        }
+                                    } else if (gpsLocation == null && netLocation != null) {
+                                        lkl = netLocation;
+                                    } else if (netLocation == null && gpsLocation != null) {
+                                        lkl = gpsLocation;
+                                    } else {
+                                        return;
                                     }
                                     tcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                                 } catch (SecurityException ee) {
@@ -191,19 +262,37 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     conn_gained = System.currentTimeMillis();
                     Long time_taken_to_regain = conn_gained - conn_lost;
                     conn_lost = Long.valueOf(0);
-                    Location lkl = null;
                     try {
-                        lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
-                        if (lkl == null) {
-                            try {
-                                lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-                            } catch(SecurityException e) {
-                                return;
-                            }
-                            if(lkl == null) {
-                                return;
-                            }
+                        Location lkl;
+                        Location netLocation;
+                        Location gpsLocation;
+
+                        try {
+                            gpsLocation = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                        } catch(SecurityException e) {
+                            return;
                         }
+
+                        try {
+                            netLocation = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                        } catch(SecurityException e) {
+                            return;
+                        }
+
+                        if (gpsLocation != null && netLocation != null) {
+                            if (isBetterLocation(gpsLocation, netLocation)) {
+                                lkl = gpsLocation;
+                            } else {
+                                lkl = netLocation;
+                            }
+                        } else if (gpsLocation == null && netLocation != null) {
+                            lkl = netLocation;
+                        } else if (netLocation == null && gpsLocation != null) {
+                            lkl = gpsLocation;
+                        } else {
+                            return;
+                        }
+
                         conn_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                     } catch (SecurityException e) {
                         conn_regained_loc = "?,?,?";
@@ -217,16 +306,34 @@ public class MobilityAnalyser extends BroadcastReceiver {
                 conn_lost = System.currentTimeMillis();
                 has_network = false;
                 try {
-                    Location lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
-                    if (lkl == null) {
-                        try {
-                            lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-                        } catch(SecurityException e) {
-                            return;
+                    Location lkl;
+                    Location netLocation;
+                    Location gpsLocation;
+
+                    try {
+                        gpsLocation = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                    } catch(SecurityException e) {
+                        return;
+                    }
+
+                    try {
+                        netLocation = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                    } catch(SecurityException e) {
+                        return;
+                    }
+
+                    if (gpsLocation != null && netLocation != null) {
+                        if (isBetterLocation(gpsLocation, netLocation)) {
+                            lkl = gpsLocation;
+                        } else {
+                            lkl = netLocation;
                         }
-                        if(lkl == null) {
-                            return;
-                        }
+                    } else if (gpsLocation == null && netLocation != null) {
+                        lkl = netLocation;
+                    } else if (netLocation == null && gpsLocation != null) {
+                        lkl = gpsLocation;
+                    } else {
+                        return;
                     }
                     conn_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                 } catch (SecurityException e) {
@@ -240,18 +347,35 @@ public class MobilityAnalyser extends BroadcastReceiver {
                     dhcp_gained = System.currentTimeMillis();
                     Long time_taken_to_regain = dhcp_gained - dhcp_lost;
                     dhcp_lost = Long.valueOf(0);
-                    Location lkl = null;
                     try {
-                        lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
-                        if (lkl == null) {
-                            try {
-                                lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-                            } catch(SecurityException e) {
-                                return;
+                        Location lkl;
+                        Location netLocation;
+                        Location gpsLocation;
+
+                        try {
+                            gpsLocation = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                        } catch(SecurityException e) {
+                            return;
+                        }
+
+                        try {
+                            netLocation = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                        } catch(SecurityException e) {
+                            return;
+                        }
+
+                        if (gpsLocation != null && netLocation != null) {
+                            if (isBetterLocation(gpsLocation, netLocation)) {
+                                lkl = gpsLocation;
+                            } else {
+                                lkl = netLocation;
                             }
-                            if(lkl == null) {
-                                return;
-                            }
+                        } else if (gpsLocation == null && netLocation != null) {
+                            lkl = netLocation;
+                        } else if (netLocation == null && gpsLocation != null) {
+                            lkl = gpsLocation;
+                        } else {
+                            return;
                         }
                         dhcp_regained_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                     } catch (SecurityException e) {
@@ -266,18 +390,35 @@ public class MobilityAnalyser extends BroadcastReceiver {
             } else {
                 dhcp_lost = System.currentTimeMillis();
                 has_dhcp = false;
-                Location lkl = null;
                 try {
-                    lkl = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
-                    if (lkl == null) {
-                        try {
-                            lkl = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-                        } catch(SecurityException e) {
-                            return;
+                    Location lkl;
+                    Location netLocation;
+                    Location gpsLocation;
+
+                    try {
+                        gpsLocation = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
+                    } catch(SecurityException e) {
+                        return;
+                    }
+
+                    try {
+                        netLocation = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                    } catch(SecurityException e) {
+                        return;
+                    }
+
+                    if (gpsLocation != null && netLocation != null) {
+                        if (isBetterLocation(gpsLocation, netLocation)) {
+                            lkl = gpsLocation;
+                        } else {
+                            lkl = netLocation;
                         }
-                        if(lkl == null) {
-                            return;
-                        }
+                    } else if (gpsLocation == null && netLocation != null) {
+                        lkl = netLocation;
+                    } else if (netLocation == null && gpsLocation != null) {
+                        lkl = gpsLocation;
+                    } else {
+                        return;
                     }
                     dhcp_lost_loc = String.valueOf(lkl.getLatitude()) + "," + String.valueOf(lkl.getLongitude() + "," + lkl.getAccuracy());
                 } catch (SecurityException e) {
@@ -328,5 +469,61 @@ public class MobilityAnalyser extends BroadcastReceiver {
         }
 
         return ipAddressString;
+    }
+
+    private static final int TWO_MINUTES = 1000 * 60 * 2;
+
+    /** Determines whether one Location reading is better than the current Location fix
+     * @param location  The new Location that you want to evaluate
+     * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+     */
+    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
+
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+        boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location
+        // because the user has likely moved
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                currentBestLocation.getProvider());
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Checks whether two providers are the same */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 }
