@@ -196,11 +196,6 @@ public class WiFiLocationMapper extends Fragment {
             this.forceBtn.setEnabled(false);
             this.forceBtn.setText("Scanning...");
 
-
-            if (location.getAccuracy() > 20) {
-                return;
-            }
-
             if (prevlocation == null || location.getLatitude() != prevlocation.getLatitude() || location.getLongitude() != prevlocation.getLongitude()) {
                 double lat = location.getLatitude();
                 double lon = location.getLongitude();
