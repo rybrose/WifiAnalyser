@@ -195,7 +195,11 @@ public class WiFiLocationMapper extends Fragment {
         public void onLocationChanged(android.location.Location location) {
             this.forceBtn.setEnabled(false);
             this.forceBtn.setText("Scanning...");
-            ((WifiAnalyser)getActivity()).setDebugText("Scanning started automatically.");
+            try {
+                ((WifiAnalyser) getActivity()).setDebugText("Scanning started automatically.");
+            } catch (NullPointerException e) {
+
+            }
 
             if (location.getAccuracy() > 20) {
                 return;
@@ -209,7 +213,11 @@ public class WiFiLocationMapper extends Fragment {
                 this.prevlocation = location;
                 mLocation = location;
                 mLinkLayerAnalyser.networks.clear();
-                getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                try {
+                    getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                } catch (Exception e) {
+
+                }
                 mWifiManager.startScan();
             }
 
@@ -227,14 +235,13 @@ public class WiFiLocationMapper extends Fragment {
     public void onPause() {
         // Always call the superclass method first
         super.onPause();
-        getActivity().unregisterReceiver(mLinkLayerAnalyser);
+
     }
 
     @Override
     public void onResume() {
         // Always call the superclass method first
         super.onResume();
-        getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
 }

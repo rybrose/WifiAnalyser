@@ -43,6 +43,7 @@ public class MobilityAnalyser extends BroadcastReceiver {
     String conn_lost_loc = "";
     String conn_regained_loc = "";
     final private DataWriter writer;
+    private Thread pingWorker;
 
     public MobilityAnalyser(WifiManager w, LocationManager lm, final DataWriter wr, Context context) {
         mWifiManager = w;
@@ -50,7 +51,7 @@ public class MobilityAnalyser extends BroadcastReceiver {
         this.writer = wr;
         final Context mContext = context;
         prev_bssid = w.getConnectionInfo().getBSSID();
-        Thread pingWorker = new Thread(new Runnable() {
+        pingWorker = new Thread(new Runnable() {
             @Override
             public void run() {
                 Long tcp_gained = System.currentTimeMillis();
@@ -295,5 +296,9 @@ public class MobilityAnalyser extends BroadcastReceiver {
             }
         });
 
+    }
+
+    public void stopThread() {
+        this.pingWorker.interrupt();
     }
 }
