@@ -256,7 +256,7 @@ public class MobilityAnalyser extends BroadcastReceiver {
         NetworkInfo netInfo = conMan.getActiveNetworkInfo();
 
         if (intent.getAction() == ConnectivityManager.CONNECTIVITY_ACTION) {
-            if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            if (netInfo != null && netInfo.isConnected() && netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                 has_network = true;
                 if (conn_lost != 0) {
                     conn_gained = System.currentTimeMillis();
