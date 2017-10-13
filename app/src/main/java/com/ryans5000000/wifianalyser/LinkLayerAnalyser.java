@@ -158,9 +158,8 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
         // Scan results are available 
         if (intent.getAction() == WifiManager.SCAN_RESULTS_AVAILABLE_ACTION) {
             if (newLoc) {
-
                 uniwideAPs = 0;
-                bestUniWideRSSI = 0;
+                bestUniWideRSSI = -100;
                 ArrayList<ScanResult> alScanResults = (ArrayList<ScanResult>) mWifiManager.getScanResults();
                 // Count the number of unique Uniwide APs
                 for (ScanResult s : alScanResults) {
