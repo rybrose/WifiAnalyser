@@ -31,6 +31,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
     private int uniwideAPs = 0;
     private HashMap<String, Boolean> visited;
     public boolean newLoc = true;
+    private int bestUniWideRSSI = 0;
 
     public LinkLayerAnalyser(WifiManager w, LocationManager lm, DataWriter writer) {
         this.writer = writer;
@@ -83,7 +84,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
         }
 
         String strLoc = location.getLatitude() + "," + location.getLongitude() + "," + location.getAccuracy();
-        String data = timestamp + "," + strLoc + "," + uniwideAPs + "," + getStrength()  + "," + getProtocol()  + "," + getSpeed() + "," + getFrequency() + "," + getBSSID() + "," + getIpAddress();
+        String data = timestamp + "," + strLoc + "," + uniwideAPs + "," + getStrength() + "," + this.bestUniWideRSSI + "," + getProtocol()  + "," + getSpeed() + "," + getFrequency() + "," + getBSSID() + "," + getIpAddress();
         writer.write(data, "coverage.csv");
     }
 
@@ -159,11 +160,15 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
             if (newLoc) {
 
                 uniwideAPs = 0;
+                bestUniWideRSSI = 0;
                 ArrayList<ScanResult> alScanResults = (ArrayList<ScanResult>) mWifiManager.getScanResults();
                 // Count the number of unique Uniwide APs
                 for (ScanResult s : alScanResults) {
                     networks.add(s);
                     if (s.SSID.equals("uniwide")) {
+                        if (s.level > this.bestUniWideRSSI) {
+                            this.bestUniWideRSSI = s.level;
+                        }
                         uniwideAPs++;
                     }
                 }

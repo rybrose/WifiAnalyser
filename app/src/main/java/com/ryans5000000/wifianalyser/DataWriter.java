@@ -42,7 +42,7 @@ public class DataWriter {
                 fileWriter = new FileWriter(file, true);
                 out = new BufferedWriter(fileWriter);
                 if (filename.equals("coverage.csv")) {
-                    out.write("time,lat,long,accuracy,num_uniwide_aps,strength,protocol,speed,freq,bssid,ip");
+                    out.write("time,lat,long,accuracy,num_uniwide_aps,strength,best_available_uniwide_ap_strength,protocol,speed,freq,bssid,ip");
                 } else if (filename.equals("blackspots.csv")) {
                     out.write("time,lat,long,accuracy,lat2,long2,accuracy2,type_of_disconnect,time_taken_to_regain,prev_bssid,new_bssid,prev_ip,new_ip");
                 }
