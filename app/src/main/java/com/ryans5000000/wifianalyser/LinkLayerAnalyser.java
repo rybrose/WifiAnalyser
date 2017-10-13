@@ -30,6 +30,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
     private DataWriter writer;
     private int uniwideAPs = 0;
     private HashMap<String, Boolean> visited;
+    public boolean newLoc = true;
 
     public LinkLayerAnalyser(WifiManager w, LocationManager lm, DataWriter writer) {
         this.writer = writer;
@@ -155,18 +156,20 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // Scan results are available 
         if (intent.getAction() == WifiManager.SCAN_RESULTS_AVAILABLE_ACTION) {
+            if (newLoc) {
 
-            uniwideAPs = 0;
-            ArrayList<ScanResult> alScanResults = (ArrayList<ScanResult>) mWifiManager.getScanResults();
-            // Count the number of unique Uniwide APs
-            for (ScanResult s : alScanResults) {
-                networks.add(s);
-                if (s.SSID.equals("uniwide")) {
-                    uniwideAPs++;
+                uniwideAPs = 0;
+                ArrayList<ScanResult> alScanResults = (ArrayList<ScanResult>) mWifiManager.getScanResults();
+                // Count the number of unique Uniwide APs
+                for (ScanResult s : alScanResults) {
+                    networks.add(s);
+                    if (s.SSID.equals("uniwide")) {
+                        uniwideAPs++;
+                    }
                 }
+                saveData();
+                newLoc = false;
             }
-            saveData();
-            context.unregisterReceiver(this);
         }
     }
 

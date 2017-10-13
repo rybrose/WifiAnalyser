@@ -196,6 +196,10 @@ public class WiFiLocationMapper extends Fragment {
             this.forceBtn.setEnabled(false);
             this.forceBtn.setText("Scanning...");
 
+            if (location.getAccuracy() > 40) {
+                return;
+            }
+
             if (prevlocation == null || location.getLatitude() != prevlocation.getLatitude() || location.getLongitude() != prevlocation.getLongitude()) {
                 double lat = location.getLatitude();
                 double lon = location.getLongitude();
@@ -204,12 +208,13 @@ public class WiFiLocationMapper extends Fragment {
                 this.prevlocation = location;
                 mLocation = location;
                 mLinkLayerAnalyser.networks.clear();
-                try {
+                mLinkLayerAnalyser.newLoc = true;
+                /*try {
                     getActivity().registerReceiver(mLinkLayerAnalyser, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                 } catch (Exception e) {
 
                 }
-                mWifiManager.startScan();
+                mWifiManager.startScan();*/
             }
 
         }
