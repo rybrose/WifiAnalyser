@@ -157,7 +157,6 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // Scan results are available 
         if (intent.getAction() == WifiManager.SCAN_RESULTS_AVAILABLE_ACTION) {
-            if (newLoc) {
                 uniwideAPs = 0;
                 bestUniWideRSSI = -100;
                 ArrayList<ScanResult> alScanResults = (ArrayList<ScanResult>) mWifiManager.getScanResults();
@@ -172,8 +171,7 @@ public class LinkLayerAnalyser extends BroadcastReceiver {
                     }
                 }
                 saveData();
-                newLoc = false;
-            }
+
         }
     }
 
